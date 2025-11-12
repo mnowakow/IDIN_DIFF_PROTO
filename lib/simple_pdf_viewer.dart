@@ -30,6 +30,7 @@ class SimplePdfViewer extends StatefulWidget {
   final List<int>? filter;
   final ValueChanged<int>? onPageTap;
   ScrollNotifier? scrollNotifier;
+  String pageName;
 
   SimplePdfViewer({
     super.key,
@@ -38,6 +39,7 @@ class SimplePdfViewer extends StatefulWidget {
     this.filter,
     this.onPageTap,
     this.scrollNotifier,
+    required this.pageName,
   });
 
   @override
@@ -72,9 +74,11 @@ class _SimplePdfViewerState extends State<SimplePdfViewer> {
     context.read<PdfDocumentProvider>().load(widget.pdfAssetPath);
 
     final annotationNotifier = context.read<AnnotationNotifier>();
-    annotationNotifier.scrollNotifier =
-        widget.scrollNotifier ?? ScrollNotifier();
-    annotationNotifier.scrollController = _internalScrollController;
+    if (!widget.isMiniview) {
+      annotationNotifier.scrollNotifier =
+          widget.scrollNotifier ?? ScrollNotifier();
+      annotationNotifier.scrollController = _internalScrollController;
+    }
 
     _scrollListener = () {
       if (_disposed || !mounted) return;
@@ -302,7 +306,7 @@ class _SimplePdfViewerState extends State<SimplePdfViewer> {
                 _internalTfController,
               ),
               if (!widget.isMiniview) ...[
-                spiralMenu(),
+                //spiralMenu(),
                 DrawingWidget(
                   annotationNotifier: annotationNotifier,
                   scrollNotifier: widget.scrollNotifier!,
@@ -363,6 +367,7 @@ class PdfView extends StatelessWidget {
         return false;
       },
       child: SingleChildScrollView(
+        key: PageStorageKey('pdf_scroll_view_${widget.pageName}'),
         controller: scrollController,
         child: Stack(
           children: [

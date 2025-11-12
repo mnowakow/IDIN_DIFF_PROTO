@@ -1,6 +1,14 @@
 import 'package:flutter/foundation.dart';
 
-enum SideBarWidget { none, miniView, bookmarks, colorPalette, camera, trash }
+enum SideBarWidget {
+  none,
+  miniView,
+  bookmarks,
+  colorPalette,
+  camera,
+  trash,
+  annot,
+}
 
 class SidebarNotifier extends ChangeNotifier {
   static final SidebarNotifier instance = SidebarNotifier._internal();

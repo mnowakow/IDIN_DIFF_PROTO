@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:idin_diff_prototype/annotation_list.dart';
 import 'package:idin_diff_prototype/filtered_view.dart';
 import 'package:idin_diff_prototype/miniview.dart';
 import 'package:idin_diff_prototype/scroll_notifier.dart';
@@ -57,12 +58,12 @@ class _ExpandableSidebarState extends State<ExpandableSidebar> {
       width:
           widget.position == SidebarPosition.left ||
                   widget.position == SidebarPosition.right
-              ? (expanded ? 200 : 70)
+              ? (expanded ? (470) : 70)
               : double.infinity,
       height:
           widget.position == SidebarPosition.top ||
                   widget.position == SidebarPosition.bottom
-              ? (expanded ? 200 : 40)
+              ? (expanded ? 400 : 40)
               : double.infinity,
       child: Row(
         textDirection:
@@ -70,11 +71,41 @@ class _ExpandableSidebarState extends State<ExpandableSidebar> {
                 ? TextDirection.rtl
                 : TextDirection.ltr,
         children: [
-          // Main sidebar column
-          Expanded(
+          // Main sidebar column - feste Breite
+          Container(
+            width: 70,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Stack(
+                  children: [
+                    IconButton(
+                      iconSize: 40,
+                      icon: Icon(Icons.first_page_rounded, size: 40),
+                      onPressed:
+                          () => setState(() {
+                            widget.scrollNotifier.scrollToPage(1);
+                          }),
+                    ),
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.amber),
+                        child: Text(
+                          '1',
+                          style: TextStyle(
+                            color: Colors.grey[800],
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24),
                 IconButton(
                   iconSize: 40,
                   icon: Icon(Icons.auto_awesome_mosaic, size: 40),
@@ -100,84 +131,102 @@ class _ExpandableSidebarState extends State<ExpandableSidebar> {
                 //         SidebarNotifier.instance.openSidebar = selectedWidget;
                 //       }),
                 // ),
+                // SizedBox(height: 24),
+                // IconButton(
+                //   iconSize: 40,
+                //   icon: Container(
+                //     decoration: BoxDecoration(
+                //       color:
+                //           SidebarNotifier.instance.openSidebar ==
+                //                   SideBarWidget.colorPalette
+                //               ? Colors.green.shade400
+                //               : null,
+                //       borderRadius: BorderRadius.circular(100),
+                //     ),
+                //     padding: EdgeInsets.all(8),
+                //     child: Icon(Icons.color_lens, size: 40),
+                //   ),
+                //   onPressed:
+                //       () => setState(() {
+                //         expanded = false;
+                //         if (selectedWidget == SideBarWidget.colorPalette) {
+                //           selectedWidget = SideBarWidget.none;
+                //           // expanded = false;
+                //         } else {
+                //           // expanded = true;
+                //           selectedWidget = SideBarWidget.colorPalette;
+                //         }
+                //         SidebarNotifier.instance.openSidebar = selectedWidget;
+                //       }),
+                // ),
+
+                // SizedBox(height: 24),
+                // IconButton(
+                //   iconSize: 40,
+                //   icon: Container(
+                //     decoration: BoxDecoration(
+                //       color:
+                //           SidebarNotifier.instance.openSidebar ==
+                //                   SideBarWidget.camera
+                //               ? Colors.green.shade400
+                //               : null,
+                //       borderRadius: BorderRadius.circular(100),
+                //     ),
+                //     padding: EdgeInsets.all(8),
+                //     child: Icon(Icons.camera_outlined, size: 40),
+                //   ),
+                //   onPressed:
+                //       () => setState(() {
+                //         //expanded = false;
+                //         selectedWidget = SideBarWidget.camera;
+                //         if (SidebarNotifier.instance.openSidebar !=
+                //             SideBarWidget.camera) {
+                //           SidebarNotifier.instance.openSidebar = selectedWidget;
+                //         } else {
+                //           SidebarNotifier.instance.openSidebar =
+                //               SideBarWidget.none;
+                //         }
+                //       }),
+                // ),
                 SizedBox(height: 24),
                 IconButton(
                   iconSize: 40,
-                  icon: Container(
-                    decoration: BoxDecoration(
-                      color:
-                          SidebarNotifier.instance.openSidebar ==
-                                  SideBarWidget.colorPalette
-                              ? Colors.green.shade400
-                              : null,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    padding: EdgeInsets.all(8),
-                    child: Icon(Icons.color_lens, size: 40),
-                  ),
-                  onPressed:
-                      () => setState(() {
-                        expanded = false;
-                        if (selectedWidget == SideBarWidget.colorPalette) {
-                          selectedWidget = SideBarWidget.none;
-                          // expanded = false;
-                        } else {
-                          // expanded = true;
-                          selectedWidget = SideBarWidget.colorPalette;
-                        }
-                        SidebarNotifier.instance.openSidebar = selectedWidget;
-                      }),
-                ),
-                SizedBox(height: 24),
-                IconButton(
-                  iconSize: 40,
-                  icon: Container(
-                    decoration: BoxDecoration(
-                      color:
-                          SidebarNotifier.instance.openSidebar ==
-                                  SideBarWidget.camera
-                              ? Colors.green.shade400
-                              : null,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    padding: EdgeInsets.all(8),
-                    child: Icon(Icons.camera_outlined, size: 40),
-                  ),
-                  onPressed:
-                      () => setState(() {
-                        //expanded = false;
-                        selectedWidget = SideBarWidget.camera;
-                        if (SidebarNotifier.instance.openSidebar !=
-                            SideBarWidget.camera) {
-                          SidebarNotifier.instance.openSidebar = selectedWidget;
-                        } else {
-                          SidebarNotifier.instance.openSidebar =
-                              SideBarWidget.none;
-                        }
-                      }),
-                ),
-                SizedBox(height: 24),
-                IconButton(
-                  iconSize: 40,
-                  icon: Icon(Icons.delete_forever, size: 40),
-                  onPressed: () {},
-                  onLongPress: () {
-                    print("Trash Icon Long Pressed");
+                  icon: Icon(Icons.sticky_note_2_outlined, size: 40),
+                  onPressed: () {
                     setState(() {
-                      //expanded = false;
-                      selectedWidget = SideBarWidget.trash;
-                      if (SidebarNotifier.instance.openSidebar !=
-                          SideBarWidget.trash) {
-                        SidebarNotifier.instance.openSidebar = selectedWidget;
+                      if (selectedWidget == SideBarWidget.annot) {
+                        expanded = !expanded;
+                      } else if (selectedWidget == SideBarWidget.none) {
+                        expanded = true;
                       } else {
-                        SidebarNotifier.instance.openSidebar =
-                            SideBarWidget.none;
+                        expanded = true;
                       }
-                      // Delete all annotations_*.json files from directory
-                      _deleteJson();
+                      selectedWidget = SideBarWidget.annot;
+                      SidebarNotifier.instance.openSidebar = selectedWidget;
                     });
                   },
                 ),
+                // SizedBox(height: 24),
+                // IconButton(
+                //   iconSize: 40,
+                //   icon: Icon(Icons.delete_forever, size: 40),
+                //   onPressed: () {},
+                //   onLongPress: () {
+                //     print("Trash Icon Long Pressed");
+                //     _deleteJson();
+                //     setState(() {
+                //       //expanded = false;
+                //       selectedWidget = SideBarWidget.trash;
+                //       if (SidebarNotifier.instance.openSidebar !=
+                //           SideBarWidget.trash) {
+                //         SidebarNotifier.instance.openSidebar = selectedWidget;
+                //       } else {
+                //         SidebarNotifier.instance.openSidebar =
+                //             SideBarWidget.none;
+                //       }
+                //     });
+                //   },
+                // ),
               ],
             ),
           ),
@@ -190,6 +239,8 @@ class _ExpandableSidebarState extends State<ExpandableSidebar> {
                         pdfAssetPath: "assets/pdfs/lafiamma.pdf",
                         scrollNotifier: widget.scrollNotifier,
                       )
+                      : selectedWidget == SideBarWidget.annot
+                      ? AnnotationList(scrollNotifier: widget.scrollNotifier)
                       : selectedWidget == SideBarWidget.bookmarks
                       ? FilteredView(
                         isMiniView: true,

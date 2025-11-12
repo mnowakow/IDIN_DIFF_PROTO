@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:idin_diff_prototype/annotation_filter_notifier.dart';
+import 'package:idin_diff_prototype/annotation_notifier.dart';
 import 'package:idin_diff_prototype/helper.dart';
 import 'package:idin_diff_prototype/login_page_notifier.dart';
 
@@ -15,6 +16,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String username = 'admin';
+
+  @override
+  void initState() {
+    super.initState();
+    AnnotationNotifier.instance.deleteAnnotationsByUser("admin");
+    AnnotationNotifier.instance.deleteAnnotationsByUser("default");
+  }
 
   @override
   Widget build(BuildContext context) {

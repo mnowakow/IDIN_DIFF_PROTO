@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter_svg/svg.dart';
 import 'package:idin_diff_prototype/annotation_filter_notifier.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:vector_math/vector_math_64.dart' as vec;
@@ -42,4 +43,48 @@ Future<List<String>> getAllUsers() async {
     }
   }
   return users;
+}
+
+double getAnnotationWidth(Widget annotationContent) {
+  if (annotationContent is SvgPicture) {
+    return (annotationContent as SvgPicture).width! / 10;
+  } else if (annotationContent is Image) {
+    return (annotationContent as Image).width?.toDouble() ?? 200;
+  } else if (annotationContent is SizedBox) {
+    final sizedBox = annotationContent as SizedBox;
+    return sizedBox.width?.toDouble() ?? 200;
+  } else if (annotationContent is ClipRRect) {
+    final clipRRect = annotationContent as ClipRRect;
+    if (clipRRect.child is SizedBox) {
+      final sizedBox = clipRRect.child as SizedBox;
+      return sizedBox.width?.toDouble() ?? 200;
+    }
+    if (clipRRect.child is Image) {
+      final image = clipRRect.child as Image;
+      return image.width?.toDouble() ?? 200;
+    }
+  }
+  return 200;
+}
+
+double getAnnotationHeight(Widget annotationContent) {
+  if (annotationContent is SvgPicture) {
+    return (annotationContent as SvgPicture).height! / 10;
+  } else if (annotationContent is Image) {
+    return (annotationContent as Image).height?.toDouble() ?? 200;
+  } else if (annotationContent is SizedBox) {
+    final sizedBox = annotationContent as SizedBox;
+    return sizedBox.height?.toDouble() ?? 200;
+  } else if (annotationContent is ClipRRect) {
+    final clipRRect = annotationContent as ClipRRect;
+    if (clipRRect.child is SizedBox) {
+      final sizedBox = clipRRect.child as SizedBox;
+      return sizedBox.height?.toDouble() ?? 200;
+    }
+    if (clipRRect.child is Image) {
+      final image = clipRRect.child as Image;
+      return image.height?.toDouble() ?? 200;
+    }
+  }
+  return 200;
 }

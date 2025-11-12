@@ -16,6 +16,12 @@ class ScrollNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  void scrollToPosition(double position, ScrollController scrollController) {
+    scrollController.jumpTo(position);
+    mode = ScrollMode.smoothScroll;
+    notifyListeners();
+  }
+
   void scrollBy(double offset, ScrollController scrollController) {
     scrollController.jumpTo(scrollController.offset + offset);
     mode = ScrollMode.smoothScroll;

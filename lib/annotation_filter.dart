@@ -17,13 +17,12 @@ class _AnnotationFilterState extends State<AnnotationFilter> {
   List<String> availableAnnotations = [];
   Map<String, bool> selectedAnnotations = {};
   static const List<Color> highContrastColors = [
-    Color(0xFF0D47A1), // Deep Blue
-    Color(0xFF1B5E20), // Dark Green
-    Color(0xFFB71C1C), // Dark Red
-    Color(0xFFE65100), // Dark Orange
-    Color(0xFF4A148C), // Deep Purple
-    Color(0xFF006064), // Dark Cyan
-    Color(0xFF3E2723), // Dark Brown
+    Color(0xFF8BC34A), // Light Green
+    Color.fromARGB(255, 197, 79, 168), // Deep Orange
+    Color.fromARGB(255, 254, 0, 0), // Deep Purple
+    Color.fromARGB(255, 25, 185, 132), // Dark Cyan
+    Color(0xFF0277BD), // Light Blue
+    Color.fromARGB(255, 49, 13, 6), // Dark Brown
     Color(0xFF263238), // Blue Grey
     Color(0xFF827717), // Olive
     Color(0xFF880E4F), // Dark Pink
@@ -32,10 +31,9 @@ class _AnnotationFilterState extends State<AnnotationFilter> {
     Color(0xFF1A237E), // Indigo
     Color(0xFF004D40), // Teal
     Color(0xFF33691E), // Light Green Dark
-    Color(0xFFBF360C), // Deep Orange
+
     Color(0xFF6A1B9A), // Purple
-    Color(0xFF0277BD), // Light Blue
-    Color(0xFF8BC34A), // Light Green
+
     Color(0xFFFF5722), // Deep Orange Red
   ];
 

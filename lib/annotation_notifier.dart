@@ -12,6 +12,10 @@ import 'annotation.dart';
 import 'package:idin_diff_prototype/login_page_notifier.dart';
 
 class AnnotationNotifier extends ChangeNotifier {
+  static final AnnotationNotifier instance = AnnotationNotifier._internal();
+  factory AnnotationNotifier() => instance;
+  AnnotationNotifier._internal();
+
   final Map<String, List<Annotation>> _annotations = {};
   static const String _fileName = 'annotations.json';
   ScrollNotifier sn = ScrollNotifier();
@@ -81,6 +85,25 @@ class AnnotationNotifier extends ChangeNotifier {
     _annotations[owner]!.add(newAnnotation);
     notifyListeners();
     _saveAnnotations(); // Auto-save when duplicating
+  }
+
+  Annotation copyAnnotation(Annotation annotation) {
+    String owner = _currentUser ?? 'admin';
+    if (!_annotations.containsKey(owner)) {
+      _annotations[owner] = [];
+    }
+
+    final newAnnotation = Annotation(
+      key: GlobalKey(),
+      annotationContent: annotation.annotationContent,
+      position: annotation.position,
+      scale: annotation.scale,
+      annotationNotifier: this,
+      scrollNotifier: sn,
+      scrollController: sc,
+      owner: annotation.owner,
+    );
+    return newAnnotation;
   }
 
   void removeAnnotationByKey(GlobalKey key) {
@@ -188,6 +211,38 @@ class AnnotationNotifier extends ChangeNotifier {
       );
     } catch (e) {
       print('Error saving annotations: $e');
+    }
+  }
+
+  Future<void> _deleteJsonFiles() async {
+    final directory = await getApplicationDocumentsDirectory();
+    List<FileSystemEntity> files = directory.listSync();
+    files.sort((a, b) => a.statSync().changed.compareTo(b.statSync().changed));
+    for (FileSystemEntity file in files) {
+      if (file is File && file.path.endsWith('.json')) {
+        String fileName = file.path.split('/').last;
+        file.deleteSync();
+        print("Annotation File deleted: $fileName");
+      }
+    }
+  }
+
+  Future<void> deleteAnnotationsByUser(String username) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = 'annotations_$username.json';
+      final file = File('${directory.path}/$fileName');
+
+      if (await file.exists()) {
+        await file.delete();
+        print('Deleted annotation file for user: $username');
+      }
+
+      // Also remove from memory
+      _annotations.remove(username);
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting annotations for user $username: $e');
     }
   }
 
@@ -544,7 +599,7 @@ class AnnotationNotifier extends ChangeNotifier {
   // Clear all annotations
   Future<void> clearAll() async {
     _annotations.clear();
+    await _deleteJsonFiles();
     notifyListeners();
-    await _saveAnnotations();
   }
 }

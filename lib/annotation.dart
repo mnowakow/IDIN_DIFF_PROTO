@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:idin_diff_prototype/annotation_filter_notifier.dart';
+import 'package:idin_diff_prototype/annotation_list_notifier.dart';
+import 'package:idin_diff_prototype/helper.dart';
 import 'package:idin_diff_prototype/scroll_notifier.dart';
 import 'package:vector_graphics/vector_graphics.dart' as vg;
 import 'package:idin_diff_prototype/annotation_notifier.dart';
@@ -45,41 +47,7 @@ class _AnnotationState extends State<Annotation> {
 
   bool _isVisible = true;
 
-  double _getAnnotationWidth() {
-    if (widget.annotationContent is SvgPicture) {
-      return (widget.annotationContent as SvgPicture).width! / 10;
-    } else if (widget.annotationContent is Image) {
-      return (widget.annotationContent as Image).width?.toDouble() ?? 200;
-    } else if (widget.annotationContent is SizedBox) {
-      final sizedBox = widget.annotationContent as SizedBox;
-      return sizedBox.width?.toDouble() ?? 200;
-    } else if (widget.annotationContent is ClipRRect) {
-      final clipRRect = widget.annotationContent as ClipRRect;
-      if (clipRRect.child is SizedBox) {
-        final sizedBox = clipRRect.child as SizedBox;
-        return sizedBox.width?.toDouble() ?? 200;
-      }
-    }
-    return 200;
-  }
-
-  double _getAnnotationHeight() {
-    if (widget.annotationContent is SvgPicture) {
-      return (widget.annotationContent as SvgPicture).height! / 10;
-    } else if (widget.annotationContent is Image) {
-      return (widget.annotationContent as Image).height?.toDouble() ?? 200;
-    } else if (widget.annotationContent is SizedBox) {
-      final sizedBox = widget.annotationContent as SizedBox;
-      return sizedBox.height?.toDouble() ?? 200;
-    } else if (widget.annotationContent is ClipRRect) {
-      final clipRRect = widget.annotationContent as ClipRRect;
-      if (clipRRect.child is SizedBox) {
-        final sizedBox = clipRRect.child as SizedBox;
-        return sizedBox.height?.toDouble() ?? 200;
-      }
-    }
-    return 200;
-  }
+  int _pageNumber = 0;
 
   void checkFilter() {
     Map<String, bool> filter = AnnotationFilterNotifier.instance.filter;
@@ -99,8 +67,8 @@ class _AnnotationState extends State<Annotation> {
     super.initState();
     AnnotationFilterNotifier.instance.addListener(checkFilter);
     _position = widget.position;
-    _width = _getAnnotationWidth();
-    _height = _getAnnotationHeight();
+    _width = getAnnotationWidth(widget.annotationContent);
+    _height = getAnnotationHeight(widget.annotationContent);
     _iAmOwner = widget.owner == widget.annotationNotifier.currentUser;
 
     // Listener SICHER hinzufügen
@@ -253,6 +221,7 @@ class _AnnotationState extends State<Annotation> {
           );
         },
         onTap: () {
+          AnnotationListNotifier.instance.scrollTo(_position.dy);
           if (!_iAmOwner) return;
           _safeSetState(() => _isTapped = !_isTapped);
         },
@@ -321,66 +290,66 @@ class _AnnotationState extends State<Annotation> {
               ),
             ),
             if (_isTapped) ...[
-              Positioned(
-                // Resize handle
-                right: 0,
-                bottom: 0,
-                child: GestureDetector(
-                  onPanUpdate: (details) {
-                    setState(() {
-                      _width += details.delta.dx;
-                      _height += details.delta.dy;
-                      if (_width < 20) _width = 20;
-                      if (_height < 20) _height = 20;
-                    });
-                  },
-                  onPanEnd:
-                      (details) => {
-                        widget.annotationNotifier.updateAnnotation(
-                          widget.key,
-                          newWidth: _width,
-                          newHeight: _height,
-                        ),
-                      },
-                  onTap: () => {print('Resize tapped')},
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.amber,
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.zoom_out_map_outlined, size: 40),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                // Delete button
-                top: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTapUp:
-                      (details) => {
-                        // widget.annotationNotifier.removeAnnotationByKey(
-                        //   widget.key,
-                        // ),
-                        widget.annotationNotifier.removeAnnotation(widget),
-                      },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Center(child: Icon(Icons.delete, size: 40)),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   // Resize handle
+              //   right: 0,
+              //   bottom: 0,
+              //   child: GestureDetector(
+              //     onPanUpdate: (details) {
+              //       setState(() {
+              //         _width += details.delta.dx;
+              //         _height += details.delta.dy;
+              //         if (_width < 20) _width = 20;
+              //         if (_height < 20) _height = 20;
+              //       });
+              //     },
+              //     onPanEnd:
+              //         (details) => {
+              //           widget.annotationNotifier.updateAnnotation(
+              //             widget.key,
+              //             newWidth: _width,
+              //             newHeight: _height,
+              //           ),
+              //         },
+              //     onTap: () => {print('Resize tapped')},
+              //     child: Container(
+              //       width: 40,
+              //       height: 40,
+              //       decoration: BoxDecoration(
+              //         color: Colors.amber,
+              //         border: Border.all(color: Colors.black),
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //       child: const Center(
+              //         child: Icon(Icons.zoom_out_map_outlined, size: 40),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Positioned(
+              //   // Delete button
+              //   top: 0,
+              //   right: 0,
+              //   child: GestureDetector(
+              //     onTapUp:
+              //         (details) => {
+              //           // widget.annotationNotifier.removeAnnotationByKey(
+              //           //   widget.key,
+              //           // ),
+              //           widget.annotationNotifier.removeAnnotation(widget),
+              //         },
+              //     child: Container(
+              //       width: 40,
+              //       height: 40,
+              //       decoration: BoxDecoration(
+              //         color: Colors.grey.shade300,
+              //         border: Border.all(color: Colors.black),
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //       child: const Center(child: Icon(Icons.delete, size: 40)),
+              //     ),
+              //   ),
+              // ),
             ],
           ],
         ),
